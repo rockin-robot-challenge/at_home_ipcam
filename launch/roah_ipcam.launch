@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<launch>
+  <arg name="ip" default="10.0.0.2"/>
+  <arg name="user" default="viewer"/>
+  <arg name="password" default="viewer"/>
+  <arg name="stream_num" default=""/>
+  <arg name="url" default="http://$(arg user):$(arg password)@$(arg ip)/mjpg/video$(arg stream_num).mjpg"/>
+  <arg name="stream_topic" default="roah_ipcam/stream"/>
+  <arg name="repub_topic" default="roah_ipcam/image"/>
+
+  <node name="roah_ipcam" pkg="roah_ipcam" type="roah_ipcam" respawn="true">
+    <param name="url" type="string" value="$(arg url)"/>
+    <param name="stream_topic" type="string" value="$(arg stream_topic)"/>
+  </node>
+
+  <node name="roah_ipcam_republisher" pkg="image_transport" type="republish" respawn="true"
+        args="compressed in:=$(arg stream_topic) out:=$(arg repub_topic)"/>
+</launch>

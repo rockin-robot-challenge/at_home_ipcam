@@ -1,0 +1,82 @@
+#!/usr/bin/env python
+
+# Copyright 2014 Instituto de Sistemas e Robotica, Instituto Superior Tecnico
+#
+# This file is part of RoAH IPCam.
+#
+# RoAH IPCam is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Lesser General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# RoAH IPCam is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with RoAH IPCam.  If not, see <http://www.gnu.org/licenses/>.
+
+import sys
+import urllib
+import urlparse
+import cStringIO as StringIO
+import Image as PIL
+import re
+
+NODE_NAME = 'roah_ipcam'
+#import roslib; roslib.load_manifest(NODE_NAME)
+import rospy
+
+from sensor_msgs.msg import *
+
+
+DEFAULT_URL = "http://127.0.0.1/video.mjpg"
+
+
+def main():
+    cimg = CompressedImage()
+    cimg.format = 'jpeg'
+    # ROS initialization
+    rospy.init_node(NODE_NAME, anonymous=True)
+    url = rospy.get_param('~url', DEFAULT_URL)
+    name_topic = rospy.get_param('~stream_topic', '~stream') + "/compressed"
+    # name_topic = "/camera_driver_" + urlparse.urlparse(url).netloc.split(".")[3] + "_" + re.search(r'\d+', urlparse.urlparse(url).path).group() + "/stream/compressed"
+    #if int(re.search(r'\d+', urlparse.urlparse(url).path).group()) == 1:
+    #    url="http://"+urlparse.urlparse(url).netloc+"/video.mjpg"
+    pub = rospy.Publisher(name_topic, CompressedImage)
+    # Connecting to IP camera and start streaming
+    rospy.loginfo("Opening source %s for streaming"%(url))
+    fh  = urllib.urlopen(url)
+    size = None
+    while not rospy.is_shutdown():
+        # Read header
+        while True:
+            line = fh.readline()
+        #    if line=='':
+        #        return
+        #    line = line.strip()
+          #  print "LINE(%s)='%s'"%(len(line), line)
+          #  rospy.sleep(3)
+            if line.startswith("Content-Length"):
+                fs = line.split()
+                try:
+                    size = int(fs[1])
+                    line = fh.readline()
+                    break
+                except StandardError:
+					continue
+            elif line=='' and size is not None:
+				break
+  #      print "HEADER END"
+        # Read image
+        data = fh.read(size)
+        # Publish jpeg image
+        cimg.data = data
+        pub.publish(cimg)
+        rospy.sleep(1.0/30)
+        size = None
+
+
+if __name__=='__main__':
+    main()

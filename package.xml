@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<package>
+  <name>roah_ipcam</name>
+  <version>0.0.0</version>
+  <description>Ready to use example of how to connect to the RoAH testbed IP camera</description>
+
+  <author email="yoda@isr.ist.utl.pt">Rodrigo Ventura</author>
+  <maintainer email="mendes.joao.p@gmail.com">João Mendes</maintainer>
+  <maintainer email="jreis@isr.ist.utl.pt">João Reis</maintainer>
+
+  <license>LGPLv3</license>
+
+  <url type="website">http://rm.isr.ist.utl.pt/projects/rockin-competitions-wiki/wiki/GCRHome</url>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>image_transport</build_depend>
+  <build_depend>rospy</build_depend>
+  <build_depend>sensor_msgs</build_depend>
+  <run_depend>image_transport</run_depend>
+  <run_depend>rospy</run_depend>
+  <run_depend>sensor_msgs</run_depend>
+</package>

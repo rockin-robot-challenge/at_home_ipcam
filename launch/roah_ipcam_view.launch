@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<launch>
+  <arg name="ip" default="10.0.0.2"/>
+  <arg name="user" default="viewer"/>
+  <arg name="password" default="viewer"/>
+
+  <include file="$(find roah_ipcam)/launch/roah_ipcam.launch">
+    <arg name="ip" value="$(arg ip)"/>
+    <arg name="user" value="$(arg user)"/>
+    <arg name="password" value="$(arg password)"/>
+  </include>
+
+  <node name="roah_ipcam_view" pkg="image_view" type="image_view" required="true">
+      <param name="autosize" value="true" />   
+      <remap from="image" to="/roah_ipcam/image"/>
+    </node>
+</launch>
